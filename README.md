@@ -1,73 +1,156 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+### **README.md**
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# Light-Traefik
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+**A Lightweight Reverse Proxy for Docker Containers**
 
-## Description
+Light-Traefik is a minimal, easy-to-use, and efficient reverse proxy server built with NestJS to manage and route Docker containers dynamically based on their subdomains. It simplifies container discovery, routing, and lifecycle management through a straightforward API.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## **Core Highlights**
 
-## Installation
+- **Dynamic Proxy Routing**: Automatically detects Docker containers and routes traffic based on subdomains.
+- **RESTful Management API**: Simple API for starting, stopping, listing, and removing Docker containers.
+- **Pre-built Docker Image**: Easy to use; simply pull and run.
+- **WebSocket Support**: Handles WebSocket upgrades for container-based traffic.
 
-```bash
-$ yarn install
+---
+
+## **Quickstart**
+
+### **Using the Pre-built Image**
+To get started instantly, pull and run the pre-built Docker image:
+
+1. **Pull the Image**:
+    ```bash
+    docker pull simplysabir/light-traefik:latest
+    ```
+
+2. **Run the Image**:
+    ```bash
+    docker run -d -p 80:80 -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock your-username/light-traefik:latest
+    ```
+
+Now, Light-Traefik is up and running! Use the Management API to control Docker containers, and access services through the proxy based on their subdomains.
+
+---
+
+## **Development**
+
+1. **Clone the Repo & Install Dependencies**:
+    ```bash
+    git clone https://github.com/simplysabir/light-traefik.git
+    cd light-traefik
+    yarn install
+    ```
+
+2. **Run in Development Mode**:
+    ```bash
+    yarn start:dev
+    ```
+
+3. **Test & Lint**:
+    ```bash
+    yarn test
+    yarn test:e2e
+    yarn lint
+    ```
+
+## **Project Structure**
+Here's a high-level overview of the project:
+```
+src/
+├── docker/
+│   ├── docker.service.ts       # Manages Docker interactions and events
+│   ├── docker.controller.ts    # Provides REST endpoints for Docker operations
+│   └── docker.module.ts        # NestJS module for Docker services
+├── proxy/
+│   ├── proxy.service.ts        # Handles reverse proxy routing and WebSocket forwarding
+│   ├── proxy.controller.ts     # Routes incoming HTTP traffic to the proxy service
+│   └── proxy.module.ts         # NestJS module for proxy functionalities
+├── main.ts                     # Application entry point
+└── app.module.ts               # Root application module
 ```
 
-## Running the app
+- **Docker Module**: Manages Docker operations (starting, stopping, listing containers).
+- **Proxy Module**: Handles all routing and reverse proxy logic.
+- **Global Routing**: All traffic is forwarded based on subdomains using the proxy logic.
 
-```bash
-# development
-$ yarn run start
+---
 
-# watch mode
-$ yarn run start:dev
+## **API Reference**
 
-# production mode
-$ yarn run start:prod
-```
+### **Containers API**
 
-## Test
+- **GET /docker/containers**  
+  *List all Docker containers (running & stopped).*
+  
+  **Response**:
+  ```json
+  [
+    {
+      "id": "container_id",
+      "name": "/container_name",
+      "image": "image_name:tag",
+      "state": "running",
+      "status": "Up 2 minutes"
+    }
+  ]
+  ```
 
-```bash
-# unit tests
-$ yarn run test
+- **POST /docker/containers**  
+  *Create and start a new container.*
+  
+  **Request Body**:
+  ```json
+  {
+    "image": "nginx",
+    "tag": "latest"
+  }
+  ```
 
-# e2e tests
-$ yarn run test:e2e
+  **Response**:
+  ```json
+  {
+    "id": "container_id",
+    "name": "/container_name",
+    "image": "nginx:latest",
+    "state": "running",
+    "status": "Created"
+  }
+  ```
 
-# test coverage
-$ yarn run test:cov
-```
+- **POST /docker/containers/:id/stop**  
+  *Stop a running container.*
 
-## Support
+- **POST /docker/containers/:id/remove**  
+  *Remove a container.*
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### **Images API**
 
-## Stay in touch
+- **POST /docker/images/:name/push**  
+  *Push a Docker image to Docker Hub.*
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+  **Request Body**:
+  ```json
+  {
+    "tag": "latest"
+  }
+  ```
 
-## License
+---
 
-Nest is [MIT licensed](LICENSE).
+## **Reverse Proxying**
+Light-Traefik automatically maps subdomains to running containers. For example:
+- A request to `container1.localhost` is routed to the Docker container named `container1`.
+
+### **WebSocket Support**
+Handles WebSocket upgrades transparently, ensuring smooth real-time communication for container-based apps.
+
+---
+
+## **MIT License**
+This project is open-source and available under the MIT License. Feel free to use, modify, and contribute!
+
+---
+
+Happy Proxying! 🚀
