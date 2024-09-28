@@ -27,7 +27,7 @@ To get started instantly, pull and run the pre-built Docker image:
 
 2. **Run the Image**:
     ```bash
-    docker run -d -p 80:80 -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock your-username/light-traefik:latest
+    docker run -d -p 80:80 -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock simplysabir/light-traefik:latest
     ```
 
 Now, Light-Traefik is up and running! Use the Management API to control Docker containers, and access services through the proxy based on their subdomains.
