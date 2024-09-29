@@ -79,6 +79,8 @@ src/
 
 ## **API Reference**
 
+Base URL :  `http://localhost/docker/`
+
 ### **Containers API**
 
 - **GET /docker/containers**  

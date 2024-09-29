@@ -8,7 +8,11 @@ async function bootstrap() {
 
   // Use the proxy for all routes
   app.use((req, res, next) => {
-    proxyService.handleRequest(req, res).catch(next);
+    if (!req.url.startsWith('/docker')) {
+      proxyService.handleRequest(req, res).catch(next);
+    } else {
+      next();
+    }
   });
 
   // Handle WebSocket upgrades
